@@ -1,0 +1,65 @@
+<script src="fUnit/fUnit-min.js"></script>
+<body>
+</body>
+
+<script>
+	function getArray(v)
+	{
+		return [1, v, 3];
+	}
+	
+	var getPerson= function(){
+		var o = {
+					age:25,
+					name: 'felipe',
+					jump: function(height){
+						return true;
+					}
+				 }
+		return o;
+	};
+	
+	// testing the array
+	fUnit.assert(getArray, 2, [1,2,3]);
+	fUnit.assert(getArray, 3, [1,3,3]);
+	fUnit.assert(getArray, 3, [1,3,3,4]);
+	fUnit.assert(getArray, 2, [1,2]);
+	fUnit.assert(getArray, 5, [1,2,3]); // forcing another error
+	
+	// testing person
+	fUnit.assert(getPerson, {age:25, name:'felipe', jump:function x(height){return true;}});
+	fUnit.assert(getPerson, {age:25, name:'felipe', foo:'bar'});
+	fUnit.assert(getPerson, {age:25, name:'felipe', jump:function (height){return true;}, foo:'bar'});
+	fUnit.assert(getPerson, {age:25, name:'felipe', jump:function (height){return true;}});
+	
+	// using an object
+	fUnit.assert({
+		call:getPerson,
+		description: "Testing using an object",
+		expected:{age:25, name:'foo', jump:function (height){return true;}}
+	});
+	
+	fUnit.assert({
+		call:getPerson,
+		expected:{age:25, name:'felipe', jump:function (height){return true;}}
+	});
+	
+	// verifying only the class, or the structure, not verifying the values
+	fUnit.assert({
+		call:getPerson,
+		structureOnly:true,
+		description: "this test is verifying ONLY the structure. It could be used to check for 'classes' instead of exact objects",
+		expected:{age:0, name:'foo', jump:function(){}}
+	});
+	
+	// forcing an error, even when verifying only the structure
+	fUnit.assert({
+		call:getPerson,
+		structureOnly:true,
+		expected:{age:0, name:'foo', jump:'string'}
+	});
+	
+	
+	fUnit.run();
+	
+</script>

@@ -1,0 +1,46 @@
+<script src="fUnit/fUnit.js"></script>
+<body>
+</body>
+
+<script>
+	function sum(value1, value2)
+	{
+		return value1+value2;
+	}
+	
+	function getBool()
+	{
+		return true;
+	}
+	
+	function getEmail(login, domain)
+	{
+		return login+"@"+domain;
+	}
+	
+	// testing the sum
+	fUnit.assert(sum, 4, 3, 7);
+	fUnit.assert(sum, 4, 4, 8);
+	fUnit.assert(sum, 4, 2, 6);
+	
+	// testing the getStr
+	fUnit.assert(getEmail, 'felipenmoura', 'gmail.com', 'felipenmoura@gmail.com');
+	fUnit.assert(getEmail, 'anotheremail', 'domain.com', 'anotheremail@domain.com');
+	
+	// testing booleans
+	fUnit.assert(getBool, true);
+	fUnit.assert(getBool, true);
+	
+	// using an object as conf
+	fUnit.assert({
+		call:sum, // required
+		// any other propertie not required or opitional will be treate as
+		// parameters to send in the specified order
+		value1:2,
+		value2:5,
+		expected:7 // required
+	});
+	
+	fUnit.run();
+	
+</script>

@@ -1,4 +1,4 @@
-(fUnit= {
+fUnit= {
 	passes:0,
 	failures:0,
 	messages: Array(),
@@ -406,7 +406,8 @@
 	},
 	init: function(){
 	}
-}).init();
+};
+fUnit.init();
 
 
 

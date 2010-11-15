@@ -1,0 +1,124 @@
+<script src="fUnit/fUnit.js"></script>
+<body>
+	
+</body>
+
+<script>
+	// functions to test
+	function sum(value1, value2)
+	{
+		return value1+value2;
+	}
+	function createElement(){
+		document.getElementsByTagName('body')[0].innerHTML+= "<span style='border:solid 1px red;' id='someId'>Div created dinamicaly</span>";
+		return true;
+	}
+	fUnit.assertIn(sum, 10, 0, [9,10,11]); // ok
+	/*
+	// the tests
+	// they actually go into your library, if you want to
+	
+	// assertIn
+		// simple mode
+	fUnit.assertIn(sum, 10, 0, [9,10,11]); // ok
+	fUnit.assertIn(sum, 10, 0, [9,12,11]); // error
+		// advanced mode
+	fUnit.assertIn({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected:[10, 12]
+	}); // ok
+	fUnit.assertIn({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected:[10, 11, 13]
+	}); // error
+	
+	// assertNotIn
+		// simple mode
+	fUnit.assertNotIn(sum, 10, 0, [9,12,11]); // ok
+	fUnit.assertNotIn(sum, 10, 0, [9,10,11]); // error
+		// advanced mode
+	fUnit.assertNotIn({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected:[10, 11, 13]
+	}); // ok
+	fUnit.assertNotIn({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected:[10, 12]
+	}); // error
+	
+	// assertNot
+		// simple mode
+	fUnit.assertNot(sum, 10, 0, 0); // ok
+	fUnit.assertNot(sum, 10, 0, 10); // error
+		// advanced mode
+	fUnit.assertNot({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected: 10
+	}); // ok
+	fUnit.assertNot({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected: 12
+	}); // error
+	
+	// assertBetween
+		// simple mode
+	fUnit.assertBetween(sum, 10, 0, [9,11]); // ok
+	fUnit.assertBetween(sum, 10, 0, [7,9]); // error
+		// advanced mode
+	fUnit.assertBetween({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected: [5, 16]
+	}); // ok
+	fUnit.assertBetween({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected: [4,9]
+	}); // error
+
+	// assertNotBetween
+		// simple mode
+	fUnit.assertNotBetween(sum, 10, 0, [7,9]); // ok
+	fUnit.assertNotBetween(sum, 10, 0, [9,11]); // error
+		// advanced mode
+	fUnit.assertNotBetween({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected: [4, 9]
+	}); // ok
+	fUnit.assertNotBetween({
+		call:sum,
+		v1:10,
+		v2:2,
+		expected: [5,16]
+	}); // error
+	*/
+	
+	// 
+	fUnit.assertExists(createElement, "document.getElementById('someId')");
+	//alert(eval('document.getElementById("xxx")'));
+	
+	// now, let's run it here
+	// though, you may call this method from your console, anytime, once
+	// your tests are already loaded rom all the libs
+	//
+	// simply comment this line to not perform the tests
+	// you' application will run just fine
+	fUnit.run();
+	
+</script>

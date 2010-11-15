@@ -2,6 +2,7 @@ fUnit= {
 	passes:0,
 	failures:0,
 	messages: Array(),
+	assertArgs: Array(),
 	format: 'html',
 	placeHolder: false,
 	htmlElement: false,
@@ -9,7 +10,7 @@ fUnit= {
 	log: function(msg)
 	{
 		this.messages.push(msg);
-		if(console)
+		if(console && console.log)
 			console.log(msg);
 	},
 	toggleDetailes: function(el){
@@ -30,14 +31,14 @@ fUnit= {
 		var dt= new Date();
 		fUnit.testEnd= dt.getTime()
 		fUnit.totalTime= fUnit.testEnd - fUnit.testStart;
-		var terDownPlaceHowder= document.createElement("div");
-		fUnit.terDownPlaceHowder= terDownPlaceHowder;
-		fUnit.container.appendChild(fUnit.terDownPlaceHowder);
-		fUnit.terDownPlaceHowder.style.color= 'white';
+		var tearDownPlaceHowder= document.createElement("div");
+		fUnit.tearDownPlaceHowder= tearDownPlaceHowder;
+		fUnit.container.appendChild(fUnit.tearDownPlaceHowder);
+		fUnit.tearDownPlaceHowder.style.color= 'white';
 		perc= perc<100? perc.toFixed(1): '100';
 		document.getElementById('fUnitDivHTMLElement_percentBar').style.width= perc+"%";
 		document.getElementById('fUnitDivHTMLElement_percent').innerHTML= perc+"%";
-		fUnit.terDownPlaceHowder.innerHTML= 'Finished: '+totalTests+' tests &nbsp; | '+
+		fUnit.tearDownPlaceHowder.innerHTML= 'Finished: '+totalTests+' tests &nbsp; | '+
 											fUnit.passes+" passes &nbsp; | "+fUnit.failures+" failures"+
 											" &nbsp; | "+perc+"% &nbsp; in "+fUnit.totalTime+"ms";
 		if(fUnit.failures>0)
@@ -45,8 +46,11 @@ fUnit= {
 			fUnit.htmlElement.style.borderColor= "red";
 			fUnit.htmlElement.style.WebkitBoxShadow= "0px 0px 16px red";
 			fUnit.htmlElement.style.MozBoxShadow= "0px 0px 16px red";
-		}else
-			fUnit.htmlElement.style.borderColor= "#44a";
+		}else{
+				fUnit.htmlElement.style.borderColor= "#4a4";
+				fUnit.htmlElement.style.WebkitBoxShadow= "0px 0px 16px #4a4";
+				fUnit.htmlElement.style.MozBoxShadow= "0px 0px 16px #4a4";
+			 }
 	},
 	pass: function(test){
 		test.status= 'passed';
@@ -134,9 +138,32 @@ fUnit= {
 		}
 		return true;
 	},
+	in: function(i, a){
+		var x;
+		for(x in a)
+			if(a[x] == i)
+				return true;
+		return false;
+	},
+	between: function(i, a){
+		var _min= Math.min(a[0], a[1]);
+		var _max= Math.max(a[0], a[1]);
+		for(_min= _min; _min<_max; _min++)
+		{
+			if(i == _min)
+				return true;
+		}
+		return false;
+	},
 	equals: function(ret, expected){
 		retType= (typeof ret).toLowerCase();
-	
+		
+		if(fUnit.currentTest.assertType == 'exists')
+		{
+			var fine= eval(fUnit.currentTest.expected);
+			return fine? true: false;
+		}
+		
 		switch(retType)
 		{
 			case 'string':
@@ -144,12 +171,37 @@ fUnit= {
 			case 'number':
 			case 'boolean':
 			case 'regexp':
+				if(fUnit.currentTest.assertType == 'in')
+				{
+					return fUnit.in(ret, fUnit.currentTest.expected);
+				}
+				if(fUnit.currentTest.assertType == 'notIn')
+				{
+					return !fUnit.in(ret, fUnit.currentTest.expected);
+				}
+				if(fUnit.currentTest.assertType == 'not')
+				{
+					return !(ret == expected);
+				}
+				if(fUnit.currentTest.assertType == 'between')
+				{
+					return fUnit.between(ret, fUnit.currentTest.expected);
+				}
+				
+				if(fUnit.currentTest.assertType == 'notBetween')
+				{
+					return !fUnit.between(ret, fUnit.currentTest.expected);
+				}
 				if(ret != expected)
 				{
 					fUnit.currentTest.notMatched= false;
 					return false;
 				}
 				return true; 
+		}
+		if(fUnit.assertArgs == 'in')
+		{
+			return false;
 		}
 		if(msg= fUnit.recursiveSweep(ret, expected))
 		{
@@ -229,14 +281,19 @@ fUnit= {
 			}
 			commandToTest+= ");";
 
-			var ret= eval(commandToTest);
+			try{
+				var ret= eval(commandToTest);
+			}catch(e)
+			{
+			
+				return false;
+			}
 			if((message= fUnit.equals(ret, test.expected)) == true)
 			{
 				fUnit.pass(test);
 			}else{
 					fUnit.fail(test, fUnit.currentTest.notMatched);
 				 }
-			
 			if(fUnit.container && fUnit.format=='html')
 			{
 				var dv= document.createElement('div');
@@ -256,25 +313,50 @@ fUnit= {
 						 "border-radius:3px;"+
 						 "border:solid 1px #777; float:left; background-color:"+
 						 (test.status=='passed'? '#bfb': 'f66')+";'> </div>";
-				if(test.status == 'passed')
+				if(test.status == 'passed'){
 					dv.innerHTML= dvStats+test.funcName+ (!test.description || test.description == ''? "": ": <i>"+test.description+"</i>");
+				}
 				else
 				{
 					var expct= test.expected;
 					var r= ret;
 					if(typeof expct == 'string')
 						expct= '"'+expct+'"';
-					else
-						expct= expct.toString();
+					else{
+							if(typeof expct == 'object')
+								expct= "["+expct.toString()+"]";
+							else
+								expct= expct.toString();
+							if(expct === '[[object Object]]')
+								expct= '{Object Structure}';
+							if(fUnit.currentTest.assertType== 'in')
+								expct= "one of "+expct;
+							if(fUnit.currentTest.assertType== 'notIn')
+								expct= "other than "+expct;
+							if(fUnit.currentTest.assertType== 'not')
+								expct= "different than "+expct;
+							if(fUnit.currentTest.assertType== 'between')
+								expct= "between "+expct;
+							if(fUnit.currentTest.assertType== 'notBetween')
+								expct= "not between "+expct;
+						}
+					if(!r) r= 'null';
 					if(typeof r == 'string')
 						r= '"'+r+'"';
-					else
-						r= r.toString();
+					else{
+							if(typeof r == 'object')
+								r= "["+r.toString()+"]";
+							else
+								r= r.toString();
+							if(r === '[[object Object]]')
+								r= '{Object Structure}';
+						}
 					
 					dv.innerHTML= dvStats+test.funcName + ": "+
 								  '<b>expected:</b> '+ expct+
 								  ' <b> received: </b>'+ r +
 								  (!test.description || test.description== ''? "": ": <i>"+test.description+"</i>");
+
 					if(fUnit.currentTest.notMatched)
 					{
 						dv.innerHTML+='<br/><b style="float:left;">diff:</b> <div style="padding:2px;margin-left:30px; white-space: pre; font-style: italic; border-left:dashed 1px #777;"> '+fUnit.currentTest.notMatched+"</div>";
@@ -298,6 +380,8 @@ fUnit= {
 	},
 	assert: function(){
 		var args = Array.prototype.slice.call(arguments);
+		if(args.length==0)
+			args= fUnit.assertArgs;
 		var arg;
 		var test= {
 					callBack: function(){},
@@ -309,12 +393,13 @@ fUnit= {
 					onFail: function(){},
 					onSuccess: function(){},
 					args: Array(),
+					assertType:'equals',
 					structureOnly:false
 				  };
 
-		if(typeof arguments[0] == 'object')
+		if(typeof args[0] == 'object')
 		{
-			var o= arguments[0];			
+			var o= args[0];			
 			for(arg in o)
 			{
 				switch(arg)
@@ -357,16 +442,21 @@ fUnit= {
 					case 'structureOnly':
 						test.structureOnly= o[arg];
 						break;
+					case 'assertType':
+						test.assertType= o[arg];
 					default:
 						test.args[arg]= o[arg];
 						break;
 				}
 			}
+			test.assertType= fUnit.assertArgs['assertType']||'equals';
 		}else{
 				if(arguments.length < 2)
 				{
 					this.log("Invalid parameters");
 				}
+				
+				test.assertType= fUnit.assertArgs['assertType']||'equals';
 				
 				var callBack= args.pop();
 				if(typeof callBack != 'function')
@@ -404,14 +494,50 @@ fUnit= {
 		}
 		fUnit.tests[test.funcName]= test;
 	},
+	assertIn: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'in';
+		fUnit.assert();
+	},
+	assertNotIn: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'notIn';
+		fUnit.assert();
+	},
+	assertNot: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'not';
+		fUnit.assert();
+	},
+	assertBetween: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'between';
+		fUnit.assert();
+	},
+	assertNotBetween: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'notBetween';
+		fUnit.assert();
+	},
+	assertExists: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'exists';
+		fUnit.assert();
+	},
 	init: function(){
 	}
 };
 fUnit.init();
-
-
-
-
-
-
 

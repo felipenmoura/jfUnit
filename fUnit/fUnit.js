@@ -158,10 +158,13 @@ fUnit= {
 	equals: function(ret, expected){
 		retType= (typeof ret).toLowerCase();
 		
-		if(fUnit.currentTest.assertType == 'exists')
+		if(fUnit.currentTest.assertType == 'state')
 		{
-			var fine= eval(fUnit.currentTest.expected);
-			return fine? true: false;
+			var fine= null;
+			alert(expected+' - '+ret)
+			if(fUnit.currentTest.expected == ret)
+				return true;
+			return false;
 		}
 		
 		switch(retType)
@@ -171,27 +174,31 @@ fUnit= {
 			case 'number':
 			case 'boolean':
 			case 'regexp':
-				if(fUnit.currentTest.assertType == 'in')
+				switch(fUnit.currentTest.assertType)
 				{
-					return fUnit.in(ret, fUnit.currentTest.expected);
-				}
-				if(fUnit.currentTest.assertType == 'notIn')
-				{
-					return !fUnit.in(ret, fUnit.currentTest.expected);
-				}
-				if(fUnit.currentTest.assertType == 'not')
-				{
-					return !(ret == expected);
-				}
-				if(fUnit.currentTest.assertType == 'between')
-				{
-					return fUnit.between(ret, fUnit.currentTest.expected);
+					case 'not':
+						return !(ret == expected);
+						break;
+					case 'in':
+						return fUnit.in(ret, fUnit.currentTest.expected);
+						break;
+					case 'notIn':
+						return !fUnit.in(ret, fUnit.currentTest.expected);
+						break;
+					case 'between':
+						return fUnit.between(ret, fUnit.currentTest.expected);
+						break;
+					case 'notBetween':
+						return !fUnit.between(ret, fUnit.currentTest.expected);
+						break;
+					case 'GT':
+						return ret > fUnit.currentTest.expected;
+						break;
+					case 'LT':
+						return ret < fUnit.currentTest.expected;
+						break;
 				}
 				
-				if(fUnit.currentTest.assertType == 'notBetween')
-				{
-					return !fUnit.between(ret, fUnit.currentTest.expected);
-				}
 				if(ret != expected)
 				{
 					fUnit.currentTest.notMatched= false;
@@ -267,33 +274,39 @@ fUnit= {
 			fUnit.currentTest= test;
 			argsToPass= Array();
 			
-			var commandToTest= "(test.func)(";
-			var quot= '';
-			for(x in test.args)
+			if(typeof test.func != 'function')
 			{
-				argsToPass.push(test.args[x]);
-				argVal= test.args[x];
-				if(typeof argVal == 'string')
-				{
-					quot= argVal.indexOf('"')? "'": '"';
-				}
-				commandToTest+= (argsToPass.length>1? ', ':'')+ quot+test.args[x]+quot;
-			}
-			commandToTest+= ");";
+				//alert(test.func);
+				var ret= test.func;
+			}else{
+					var commandToTest= "(test.func)(";
+					var quot= '';
+					for(x in test.args)
+					{
+						argsToPass.push(test.args[x]);
+						argVal= test.args[x];
+						if(typeof argVal == 'string')
+						{
+							quot= argVal.indexOf('"')? "'": '"';
+						}
+						commandToTest+= (argsToPass.length>1? ', ':'')+ quot+test.args[x]+quot;
+					}
+					commandToTest+= ");";
 
-			try{
-				var ret= eval(commandToTest);
-			}catch(e)
-			{
-			
-				return false;
-			}
+					try{
+						var ret= eval(commandToTest);
+					}catch(e)
+					{
+						fUnit.fail(test, fUnit.currentTest.notMatched);
+					}
+				  }
 			if((message= fUnit.equals(ret, test.expected)) == true)
 			{
 				fUnit.pass(test);
 			}else{
 					fUnit.fail(test, fUnit.currentTest.notMatched);
 				 }
+
 			if(fUnit.container && fUnit.format=='html')
 			{
 				var dv= document.createElement('div');
@@ -329,16 +342,33 @@ fUnit= {
 								expct= expct.toString();
 							if(expct === '[[object Object]]')
 								expct= '{Object Structure}';
-							if(fUnit.currentTest.assertType== 'in')
-								expct= "one of "+expct;
-							if(fUnit.currentTest.assertType== 'notIn')
-								expct= "other than "+expct;
-							if(fUnit.currentTest.assertType== 'not')
-								expct= "different than "+expct;
-							if(fUnit.currentTest.assertType== 'between')
-								expct= "between "+expct;
-							if(fUnit.currentTest.assertType== 'notBetween')
-								expct= "not between "+expct;
+							switch(fUnit.currentTest.assertType)
+							{
+								case 'not':
+									expct= "different than "+expct;
+									break;
+								case 'in':
+									expct= "one of "+expct;
+									break;
+								case 'notIn':
+									expct= "other than "+expct;
+									break;
+								case 'between':
+									expct= "between "+expct;
+									break;
+								case 'notBetween':
+									expct= "not between "+expct;
+									break;
+								case 'GT':
+									expct= "Greater than "+expct;
+									break;
+								case 'LT':
+									expct= "Less than "+expct;
+									break;
+								case 'state':
+									expct= "The command \""+expct+"\" didn't work!";
+									break;
+							}
 						}
 					if(!r) r= 'null';
 					if(typeof r == 'string')
@@ -493,6 +523,7 @@ fUnit= {
 			test.funcName= tmpName;
 		}
 		fUnit.tests[test.funcName]= test;
+		fUnit.assertArgs['assertType']= 'equals';
 	},
 	assertIn: function(){
 		var args= arguments;
@@ -529,11 +560,25 @@ fUnit= {
 		fUnit.assertArgs['assertType']= 'notBetween';
 		fUnit.assert();
 	},
-	assertExists: function(){
+	assertState: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
 		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'exists';
+		fUnit.assertArgs['assertType']= 'state';
+		fUnit.assert();
+	},
+	assertGT: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'GT';
+		fUnit.assert();
+	},
+	assertLT: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'LT';
 		fUnit.assert();
 	},
 	init: function(){

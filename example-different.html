@@ -10,11 +10,13 @@
 		return value1+value2;
 	}
 	function createElement(){
-		document.getElementsByTagName('body')[0].innerHTML+= "<span style='border:solid 1px red;' id='someId'>Div created dinamicaly</span>";
+		var spn= document.createElement('span');
+		spn.style.border= 'solid 1px red';
+		spn.innerHTML= "Div created dinamicaly";
+		document.getElementsByTagName('body')[0].appendChild(spn);
 		return true;
 	}
-	fUnit.assertIn(sum, 10, 0, [9,10,11]); // ok
-	/*
+
 	// the tests
 	// they actually go into your library, if you want to
 	
@@ -107,11 +109,15 @@
 		v2:2,
 		expected: [5,16]
 	}); // error
-	*/
+
+	fUnit.assertGT(sum, 10, 2, 3); // ok
+	fUnit.assertGT(sum, 10, 2, 16); // fail
+	fUnit.assertLT(sum, 10, 2, 16); // ok
+	fUnit.assertLT(sum, 10, 2, 3); // fail
 	
-	// 
-	fUnit.assertExists(createElement, "document.getElementById('someId')");
-	//alert(eval('document.getElementById("xxx")'));
+	// let's assert that that function works in the end
+	fUnit.assert(createElement, true);
+//	fUnit.assertState(document.getElementById('someId'), true);
 	
 	// now, let's run it here
 	// though, you may call this method from your console, anytime, once

@@ -21,7 +21,7 @@ fUnit= {
 			el.innerHTML= "hide values";
 			vals.style.display='';
 		}else{
-				el.innerHTML= "see values";
+				el.innerHTML= "show values";
 				vals.style.display='none'
 			 }
 	},
@@ -123,8 +123,8 @@ fUnit= {
 								else
 									MSG= "Index '"+el+"' has a different value:";
 							 }
-						fUnit.currentTest.notMatched= MSG+"<div style='cursor:pointer;margin-left:30px;float:right'"+
-													  " onclick='fUnit.toggleDetailes(this);'>see values</div>"+
+						fUnit.currentTest.notMatched= MSG+"<div style='cursor:pointer;margin-top:-14px; margin-left:30px;float:right'"+
+													  " onclick='fUnit.toggleDetailes(this);'>show values</div>"+
 													  "<table style='width:100%; display:none;'><tr><td style='"+
 													  "-webkit-box-shadow:2px 0px 4px #777; width:50%;'>"+
 													  (expMsg||"Null")+"</td><td style='-webkit-box-shadow:-2px 0px 4px #777;"+
@@ -138,7 +138,7 @@ fUnit= {
 		}
 		return true;
 	},
-	in: function(i, a){
+	into: function(i, a){
 		var x;
 		for(x in a)
 			if(a[x] == i)
@@ -179,11 +179,11 @@ fUnit= {
 					case 'not':
 						return !(ret == expected);
 						break;
-					case 'in':
-						return fUnit.in(ret, fUnit.currentTest.expected);
+					case 'into':
+						return fUnit.into(ret, fUnit.currentTest.expected);
 						break;
 					case 'notIn':
-						return !fUnit.in(ret, fUnit.currentTest.expected);
+						return !fUnit.into(ret, fUnit.currentTest.expected);
 						break;
 					case 'between':
 						return fUnit.between(ret, fUnit.currentTest.expected);
@@ -197,6 +197,34 @@ fUnit= {
 					case 'LT':
 						return ret < fUnit.currentTest.expected;
 						break;
+					case 'type':
+						var bool= false;
+						var expectedType= fUnit.currentTest.expected.toLowerCase();
+						var tmp= '';
+
+						switch(expectedType)
+						{
+							case 'integer':
+								tmp+= ret;
+								if(tmp.indexOf('.')>=0 ||isNaN(ret))
+									return false;
+								else
+									return true;
+								break;
+							case 'float':
+							case 'real':
+							case 'double':
+							case 'number':
+							case 'numeric':
+								tmp+= ret;
+								if(isNaN(ret))
+									return false
+								else
+									return true;
+								break
+						}
+						return (typeof ret == fUnit.currentTest.expected)? true: false;
+						break;
 				}
 				
 				if(ret != expected)
@@ -206,7 +234,7 @@ fUnit= {
 				}
 				return true; 
 		}
-		if(fUnit.assertArgs == 'in')
+		if(fUnit.assertArgs == 'into')
 		{
 			return false;
 		}
@@ -334,20 +362,30 @@ fUnit= {
 					var expct= test.expected;
 					var r= ret;
 					if(typeof expct == 'string')
-						expct= '"'+expct+'"';
-					else{
+					{
+						if(fUnit.currentTest.assertType == 'type')
+						{
+							expct= 'of type '+expct+'</i>';
+							r= typeof ret;
+						}
+						else if(fUnit.currentTest.assertType == 'notType'){
+							expct= '"'+expct+'"';
+						}else
+							expct= '"'+expct+'"';
+					}else{
 							if(typeof expct == 'object')
 								expct= "["+expct.toString()+"]";
 							else
 								expct= expct.toString();
 							if(expct === '[[object Object]]')
 								expct= '{Object Structure}';
+							//alert(fUnit.currentTest.assertType)
 							switch(fUnit.currentTest.assertType)
 							{
 								case 'not':
 									expct= "different than "+expct;
 									break;
-								case 'in':
+								case 'into':
 									expct= "one of "+expct;
 									break;
 								case 'notIn':
@@ -364,6 +402,9 @@ fUnit= {
 									break;
 								case 'LT':
 									expct= "Less than "+expct;
+									break;
+								case 'type':
+									expct= "type of \""+expct+"\" does not match";
 									break;
 								case 'state':
 									expct= "The command \""+expct+"\" didn't work!";
@@ -479,7 +520,7 @@ fUnit= {
 						break;
 				}
 			}
-			test.assertType= fUnit.assertArgs['assertType']||'equals';
+			test.assertType= test.assertType||fUnit.assertArgs['assertType']||'equals';
 		}else{
 				if(arguments.length < 2)
 				{
@@ -529,7 +570,7 @@ fUnit= {
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
 		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'in';
+		fUnit.assertArgs['assertType']= 'into';
 		fUnit.assert();
 	},
 	assertNotIn: function(){
@@ -579,6 +620,13 @@ fUnit= {
 		args= Array.prototype.slice.call(args);
 		fUnit.assertArgs= args;
 		fUnit.assertArgs['assertType']= 'LT';
+		fUnit.assert();
+	},
+	assertType: function(){
+		var args= arguments;
+		args= Array.prototype.slice.call(args);
+		fUnit.assertArgs= args;
+		fUnit.assertArgs['assertType']= 'type';
 		fUnit.assert();
 	},
 	init: function(){

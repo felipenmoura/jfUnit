@@ -9,6 +9,10 @@
 	{
 		return value1+value2;
 	}
+	function division(value1, value2)
+	{
+		return value2>0? value1/value2: 0;
+	}
 	function createElement(){
 		var spn= document.createElement('span');
 		spn.style.border= 'solid 1px red';
@@ -114,7 +118,13 @@
 	fUnit.assertGT(sum, 10, 2, 16); // fail
 	fUnit.assertLT(sum, 10, 2, 16); // ok
 	fUnit.assertLT(sum, 10, 2, 3); // fail
-	
+
+	fUnit.assertType(sum, 10, 2, 'integer'); // ok
+	fUnit.assertType(sum, 10, 'a', 'integer'); // fail
+
+	fUnit.assertType(division, 10, 3, 'real'); // ok
+	fUnit.assertType(division, 10, 3, 'integer'); // fail
+
 	// let's assert that that function works in the end
 	fUnit.assert(createElement, true);
 //	fUnit.assertState(document.getElementById('someId'), true);

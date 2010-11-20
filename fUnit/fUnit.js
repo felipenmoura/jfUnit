@@ -295,13 +295,27 @@ fUnit= {
 			fUnit.container= document.getElementById('fUnitDivHTMLElement');
 		}
 		
+		fUnit.runTests();
+		return true;
+	},
+	runTests: function(){
 		var argsToPass= null;
-		for(test in this.tests)
-		{ 
-			test= this.tests[test];
+		for(testName in fUnit.tests)
+		{
+			test= fUnit.tests[testName];
 			fUnit.currentTest= test;
+
+			var delay= test.delay;
+			if(delay)
+			{
+				test.delay= false;
+				setTimeout(fUnit.runTests, delay);
+				return;
+			}
+
+
 			argsToPass= Array();
-			
+
 			if(typeof test.func != 'function')
 			{
 				//alert(test.func);
@@ -422,7 +436,7 @@ fUnit= {
 							if(r === '[[object Object]]')
 								r= '{Object Structure}';
 						}
-					
+
 					dv.innerHTML= dvStats+test.funcName + ": "+
 								  '<b>expected:</b> '+ expct+
 								  ' <b> received: </b>'+ r +
@@ -435,13 +449,15 @@ fUnit= {
 				}
 				fUnit.container.appendChild(dv);
 			}
-			
+
 			if(test.callBack)
 				test.callBack(test.status);
 			fUnit.log(test.status);
+			fUnit.tests[testName]= false;
+			delete fUnit.tests[testName];
 		}
+
 		fUnit.tearDown();
-		return true;
 	},
 	test: function(){
 		fUnit.run();
@@ -515,6 +531,8 @@ fUnit= {
 						break;
 					case 'assertType':
 						test.assertType= o[arg];
+					case 'delay':
+						test.delay= o[arg];
 					default:
 						test.args[arg]= o[arg];
 						break;

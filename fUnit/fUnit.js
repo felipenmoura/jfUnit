@@ -161,7 +161,6 @@ fUnit= {
 		if(fUnit.currentTest.assertType == 'state')
 		{
 			var fine= null;
-			alert(expected+' - '+ret)
 			if(fUnit.currentTest.expected == ret)
 				return true;
 			return false;
@@ -258,8 +257,8 @@ fUnit= {
 				fUnit.htmlElement= document.createElement('div');
 				with(fUnit.htmlElement.style)
 				{
-					border='solid 4px #44a';
-					backgroundColor= "#44a";
+					border='solid 1px #44a';
+					backgroundColor= "#66f"; // #44a
 					paddingLeft= '4px';
 					paddingRight= '12px';
 					paddingBottom= '4px';
@@ -318,7 +317,6 @@ fUnit= {
 
 			if(typeof test.func != 'function')
 			{
-				//alert(test.func);
 				var ret= test.func;
 			}else{
 					var commandToTest= "(test.func)(";
@@ -367,7 +365,7 @@ fUnit= {
 						 "-moz-border-radius:3px;"+
 						 "border-radius:3px;"+
 						 "border:solid 1px #777; float:left; background-color:"+
-						 (test.status=='passed'? '#bfb': 'f66')+";'> </div>";
+						 (test.status=='passed'? '#bfb': '#f66')+";'> </div>";
 				if(test.status == 'passed'){
 					dv.innerHTML= dvStats+test.funcName+ (!test.description || test.description == ''? "": ": <i>"+test.description+"</i>");
 				}
@@ -393,7 +391,6 @@ fUnit= {
 								expct= expct.toString();
 							if(expct === '[[object Object]]')
 								expct= '{Object Structure}';
-							//alert(fUnit.currentTest.assertType)
 							switch(fUnit.currentTest.assertType)
 							{
 								case 'not':
@@ -480,10 +477,10 @@ fUnit= {
 					onFail: function(){},
 					onSuccess: function(){},
 					args: Array(),
-					assertType:'equals',
+					assertType:args['assertType']||'equals',
 					structureOnly:false
 				  };
-
+		
 		if(typeof args[0] == 'object')
 		{
 			var o= args[0];			

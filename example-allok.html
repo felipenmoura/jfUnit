@@ -1,4 +1,4 @@
-<script src="fUnit/fUnit.js"></script>
+<script src="jfUnit/jfUnit.js"></script>
 <body>
 </body>
 
@@ -19,20 +19,20 @@
 	}
 	
 	// testing the sum
-	fUnit.assert(sum, 4, 3, 7);
-	fUnit.assert(sum, 4, 4, 8);
-	fUnit.assert(sum, 4, 2, 6);
+	jfUnit.assert(sum, 4, 3, 7);
+	jfUnit.assert(sum, 4, 4, 8);
+	jfUnit.assert(sum, 4, 2, 6);
 	
 	// testing the getStr
-	fUnit.assert(getEmail, 'felipenmoura', 'gmail.com', 'felipenmoura@gmail.com');
-	fUnit.assert(getEmail, 'anotheremail', 'domain.com', 'anotheremail@domain.com');
+	jfUnit.assert(getEmail, 'felipenmoura', 'gmail.com', 'felipenmoura@gmail.com');
+	jfUnit.assert(getEmail, 'anotheremail', 'domain.com', 'anotheremail@domain.com');
 	
 	// testing booleans
-	fUnit.assert(getBool, true);
-	fUnit.assert(getBool, true);
+	jfUnit.assert(getBool, true);
+	jfUnit.assert(getBool, true);
 	
 	// using an object as conf
-	fUnit.assert({
+	jfUnit.assert({
 		call:sum, // required
 		// any other propertie not required or opitional will be treate as
 		// parameters to send in the specified order
@@ -41,6 +41,6 @@
 		expected:7 // required
 	});
 	
-	fUnit.run();
+	jfUnit.run();
 	
 </script>

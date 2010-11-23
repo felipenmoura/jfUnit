@@ -1,4 +1,4 @@
-<script src="fUnit/fUnit.js"></script>
+<script src="jfUnit/jfUnit.js"></script>
 <body>
 </body>
 
@@ -19,22 +19,22 @@
 	}
 	
 	// testing the sum
-	fUnit.assert(sum, 4, 3, 7);
-	fUnit.assert(sum, 4, 4, 7); // forcing an error
-	fUnit.assert(sum, 4, 2, 6);
+	jfUnit.assert(sum, 4, 3, 7);
+	jfUnit.assert(sum, 4, 4, 7); // forcing an error
+	jfUnit.assert(sum, 4, 2, 6);
 	
 	// testing the getStr
-	fUnit.assert(getEmail, 'felipenmoura', 'gmail.com', 'felipenmoura@gmail.com');
-	fUnit.assert(getEmail, 'forcingerror', 'gmail.com', 'felipemoura@gmail.com'); // forcing an error
+	jfUnit.assert(getEmail, 'felipenmoura', 'gmail.com', 'felipenmoura@gmail.com');
+	jfUnit.assert(getEmail, 'forcingerror', 'gmail.com', 'felipemoura@gmail.com'); // forcing an error
 	
 	// testing booleans
-	fUnit.assert(getBool, true);
-	fUnit.assert(getBool, 'true'); // forcing other error
-	fUnit.assert(getBool, 1); // 1 will be treated as true
-	fUnit.assert(getBool, 2); // forcing other error
+	jfUnit.assert(getBool, true);
+	jfUnit.assert(getBool, 'true'); // forcing other error
+	jfUnit.assert(getBool, 1); // 1 will be treated as true
+	jfUnit.assert(getBool, 2); // forcing other error
 	
 	// using an object as conf
-	fUnit.assert({
+	jfUnit.assert({
 		call:sum,
 		value1:2,
 		value2:5,
@@ -42,6 +42,6 @@
 		description: "Testing the sum of 2+5"
 	});
 	
-	fUnit.run(); // simply comment it to nor perform the tests
+	jfUnit.run(); // simply comment it to nor perform the tests
 	
 </script>

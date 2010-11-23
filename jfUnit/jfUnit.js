@@ -1,4 +1,4 @@
-fUnit= {
+jfUnit= {
 	passes:0,
 	failures:0,
 	messages: Array(),
@@ -10,12 +10,12 @@ fUnit= {
 	log: function(msg)
 	{
 		this.messages.push(msg);
-		if(console && console.log)
-			console.log(msg);
+		/*if(console && console.log)
+			console.log(msg);*/
 	},
 	toggleDetailes: function(el){
 		vals= el.parentNode.getElementsByTagName('table')[0];
-		
+
 		if(vals.style.display=='none')
 		{
 			el.innerHTML= "hide values";
@@ -26,89 +26,97 @@ fUnit= {
 			 }
 	},
 	tearDown: function(){
-		var totalTests= fUnit.passes+ fUnit.failures;
-		var perc= (fUnit.passes*100)/totalTests;
+		var totalTests= jfUnit.passes+ jfUnit.failures;
+		var perc= (jfUnit.passes*100)/totalTests;
 		var dt= new Date();
-		fUnit.testEnd= dt.getTime()
-		fUnit.totalTime= fUnit.testEnd - fUnit.testStart;
+		jfUnit.testEnd= dt.getTime()
+		jfUnit.totalTime= jfUnit.testEnd - jfUnit.testStart;
 		var tearDownPlaceHowder= document.createElement("div");
-		fUnit.tearDownPlaceHowder= tearDownPlaceHowder;
-		fUnit.container.appendChild(fUnit.tearDownPlaceHowder);
-		fUnit.tearDownPlaceHowder.style.color= 'white';
+		jfUnit.tearDownPlaceHowder= tearDownPlaceHowder;
+		jfUnit.container.appendChild(jfUnit.tearDownPlaceHowder);
+		jfUnit.tearDownPlaceHowder.style.color= 'white';
 		perc= perc<100? perc.toFixed(1): '100';
-		document.getElementById('fUnitDivHTMLElement_percentBar').style.width= perc+"%";
-		document.getElementById('fUnitDivHTMLElement_percent').innerHTML= perc+"%";
-		fUnit.tearDownPlaceHowder.innerHTML= 'Finished: '+totalTests+' tests &nbsp; | '+
-											fUnit.passes+" passes &nbsp; | "+fUnit.failures+" failures"+
-											" &nbsp; | "+perc+"% &nbsp; in "+fUnit.totalTime+"ms";
-		if(fUnit.failures>0)
+		document.getElementById('jfUnitDivHTMLElement_percentBar').style.width= perc+"%";
+		document.getElementById('jfUnitDivHTMLElement_percent').innerHTML= perc+"%";
+		jfUnit.tearDownPlaceHowder.innerHTML= 'Finished: '+totalTests+' tests &nbsp; | '+
+											jfUnit.passes+" passes &nbsp; | "+jfUnit.failures+" failures"+
+											" &nbsp; | "+perc+"% &nbsp; in "+jfUnit.totalTime+"ms";
+		if(jfUnit.failures>0)
 		{
-			fUnit.htmlElement.style.borderColor= "red";
-			fUnit.htmlElement.style.WebkitBoxShadow= "0px 0px 16px red";
-			fUnit.htmlElement.style.MozBoxShadow= "0px 0px 16px red";
+			jfUnit.htmlElement.style.borderColor= "red";
+			jfUnit.htmlElement.style.WebkitBoxShadow= "0px 0px 16px red";
+			jfUnit.htmlElement.style.MozBoxShadow= "0px 0px 16px red";
 		}else{
-				fUnit.htmlElement.style.borderColor= "#4a4";
-				fUnit.htmlElement.style.WebkitBoxShadow= "0px 0px 16px #4a4";
-				fUnit.htmlElement.style.MozBoxShadow= "0px 0px 16px #4a4";
+				jfUnit.htmlElement.style.borderColor= "#4a4";
+				jfUnit.htmlElement.style.WebkitBoxShadow= "0px 0px 16px #4a4";
+				jfUnit.htmlElement.style.MozBoxShadow= "0px 0px 16px #4a4";
 			 }
 	},
 	pass: function(test){
 		test.status= 'passed';
 		test.onSuccess();
-		fUnit.passes++;
+		jfUnit.passes++;
 	},
 	fail: function(test, message){
 		test.status= 'failed';
 		test.notMatched= message;
 		test.onFail();
-		fUnit.failures++;
+		jfUnit.failures++;
 	},
+	/**
+	 * you may set here the name of your group of
+	 * tests and the placeHolder by passing an object
+	 * Futuraly, it may offer more options
+	 * @name config
+	 * @param Object conf
+	 * @return void
+	 */
 	config: function(conf){
-		fUnit.format= conf.format||fUnit.format;
-		fUnit.placeHolder= conf.placeHolder||fUnit.placeHolder;
-		fUnit.name= conf.name||'';
+		jfUnit.format= conf.format||jfUnit.format;
+		jfUnit.placeHolder= conf.placeHolder||jfUnit.placeHolder;
+		jfUnit.name= conf.name||'';
 	},
 	tests:[],
 	recursiveSweep: function(ret, expected){
 		for(el in ret)
 		{
 			if(undefined===expected[el] ||
-			  (fUnit.currentTest.structureOnly? typeof expected[el] != typeof ret[el]: expected[el]!=ret[el]))
+			  (jfUnit.currentTest.structureOnly? typeof expected[el] != typeof ret[el]: expected[el]!=ret[el]))
 			{
 				retType= (typeof ret[el]).toLowerCase();
 				if(typeof ret[el] == 'function' && typeof expected[el] == 'function')
 				{
 					if(ret[el].name != expected[el].name)
 					{
-						if(fUnit.reverseTest)
+						if(jfUnit.reverseTest)
 						{
-							fUnit.currentTest.notMatched= "Missing method '"+(ret[el].name || expected[el].name)+"'";
-							fUnit.reverseTest= !fUnit.reverseTest;
+							jfUnit.currentTest.notMatched= "Missing method '"+(ret[el].name || expected[el].name)+"'";
+							jfUnit.reverseTest= !jfUnit.reverseTest;
 						}else
-							fUnit.currentTest.notMatched= "Extra method '"+(ret[el].name || expected[el].name)+"'";
+							jfUnit.currentTest.notMatched= "Extra method '"+(ret[el].name || expected[el].name)+"'";
 						return false;
 					}
 				}else{
 						var MSG= "";
 						var retMsg= ret[el];
 						var expMsg= expected[el];
-						
+
 						if(typeof expMsg == 'string')
 							expMsg= '"'+expMsg+'"';
 						if(typeof retMsg == 'string')
 							retMsg= '"'+retMsg+'"';
-						
-						if(fUnit.reverseTest)
+
+						if(jfUnit.reverseTest)
 						{
 							var tmp= expMsg;
 							expMsg= retMsg;
 							retMsg= tmp;
 						}
-						
+
 						if(isNaN(el))
 						{
 							if(!expected[el])
-								if(fUnit.reverseTest)
+								if(jfUnit.reverseTest)
 									MSG= "extra property '"+el+ "'";
 								else
 									MSG= "Property '"+el+ "' is missing";
@@ -116,22 +124,22 @@ fUnit= {
 								MSG= "Property '"+el+"' does not match:";
 						}else{
 								if(!expected[el])
-									if(fUnit.reverseTest)
+									if(jfUnit.reverseTest)
 										MSG= "Extra index '"+el+"'";
 									else
 										MSG= "Index '"+el+"' is missing";
 								else
 									MSG= "Index '"+el+"' has a different value:";
 							 }
-						fUnit.currentTest.notMatched= MSG+"<div style='cursor:pointer;margin-top:-14px; margin-left:30px;float:right'"+
-													  " onclick='fUnit.toggleDetailes(this);'>show values</div>"+
+						jfUnit.currentTest.notMatched= MSG+"<div style='cursor:pointer;margin-top:-14px; margin-left:30px;float:right'"+
+													  " onclick='jfUnit.toggleDetailes(this);'>show values</div>"+
 													  "<table style='width:100%; display:none;'><tr><td style='"+
 													  "-webkit-box-shadow:2px 0px 4px #777; width:50%;'>"+
 													  (expMsg||"Null")+"</td><td style='-webkit-box-shadow:-2px 0px 4px #777;"+
 													  " padding-left:8px;'>"+(retMsg||"Null")+
 													  "</td></tr></table>";
-						if(fUnit.reverseTest)
-							fUnit.reverseTest= !fUnit.reverseTest;
+						if(jfUnit.reverseTest)
+							jfUnit.reverseTest= !jfUnit.reverseTest;
 						return false;
 					 }
 			 }
@@ -157,15 +165,15 @@ fUnit= {
 	},
 	equals: function(ret, expected){
 		retType= (typeof ret).toLowerCase();
-		
-		if(fUnit.currentTest.assertType == 'state')
+
+		if(jfUnit.currentTest.assertType == 'state')
 		{
 			var fine= null;
-			if(fUnit.currentTest.expected == ret)
+			if(jfUnit.currentTest.expected == ret)
 				return true;
 			return false;
 		}
-		
+
 		switch(retType)
 		{
 			case 'string':
@@ -173,32 +181,32 @@ fUnit= {
 			case 'number':
 			case 'boolean':
 			case 'regexp':
-				switch(fUnit.currentTest.assertType)
+				switch(jfUnit.currentTest.assertType)
 				{
 					case 'not':
 						return !(ret == expected);
 						break;
 					case 'into':
-						return fUnit.into(ret, fUnit.currentTest.expected);
+						return jfUnit.into(ret, jfUnit.currentTest.expected);
 						break;
 					case 'notIn':
-						return !fUnit.into(ret, fUnit.currentTest.expected);
+						return !jfUnit.into(ret, jfUnit.currentTest.expected);
 						break;
 					case 'between':
-						return fUnit.between(ret, fUnit.currentTest.expected);
+						return jfUnit.between(ret, jfUnit.currentTest.expected);
 						break;
 					case 'notBetween':
-						return !fUnit.between(ret, fUnit.currentTest.expected);
+						return !jfUnit.between(ret, jfUnit.currentTest.expected);
 						break;
 					case 'GT':
-						return ret > fUnit.currentTest.expected;
+						return ret > jfUnit.currentTest.expected;
 						break;
 					case 'LT':
-						return ret < fUnit.currentTest.expected;
+						return ret < jfUnit.currentTest.expected;
 						break;
 					case 'type':
 						var bool= false;
-						var expectedType= fUnit.currentTest.expected.toLowerCase();
+						var expectedType= jfUnit.currentTest.expected.toLowerCase();
 						var tmp= '';
 
 						switch(expectedType)
@@ -222,40 +230,40 @@ fUnit= {
 									return true;
 								break
 						}
-						return (typeof ret == fUnit.currentTest.expected)? true: false;
+						return (typeof ret == jfUnit.currentTest.expected)? true: false;
 						break;
 				}
-				
+
 				if(ret != expected)
 				{
-					fUnit.currentTest.notMatched= false;
+					jfUnit.currentTest.notMatched= false;
 					return false;
 				}
-				return true; 
+				return true;
 		}
-		if(fUnit.assertArgs == 'into')
+		if(jfUnit.assertArgs == 'into')
 		{
 			return false;
 		}
-		if(msg= fUnit.recursiveSweep(ret, expected))
+		if(msg= jfUnit.recursiveSweep(ret, expected))
 		{
-			fUnit.reverseTest= true;
-			return fUnit.recursiveSweep(expected, ret);
+			jfUnit.reverseTest= true;
+			return jfUnit.recursiveSweep(expected, ret);
 		}
 		else
 			return msg;
 	},
 	run: function(){
-		fUnit.failures= 0;
-		fUnit.passes= 0;
+		jfUnit.failures= 0;
+		jfUnit.passes= 0;
 		var dt= new Date();
-		fUnit.testStart= dt.getTime();
-		if(fUnit.format=='html')
+		jfUnit.testStart= dt.getTime();
+		if(jfUnit.format=='html')
 		{
-			if(!fUnit.htmlElement)
+			if(!jfUnit.htmlElement)
 			{
-				fUnit.htmlElement= document.createElement('div');
-				with(fUnit.htmlElement.style)
+				jfUnit.htmlElement= document.createElement('div');
+				with(jfUnit.htmlElement.style)
 				{
 					border='solid 1px #44a';
 					backgroundColor= "#66f"; // #44a
@@ -271,44 +279,44 @@ fUnit= {
 					MozBoxShadow= '1px 1px 8px #444';
 					boxShadow= '1px 1px 8px #444';
 				}
-				fUnit.htmlElement.id= 'fUnitDivHTMLElementRoot';
+				jfUnit.htmlElement.id= 'jfUnitDivHTMLElementRoot';
 			}
 			var htmlContent=  "<table style='width:100%;'>";
 				htmlContent+= "<tr><td style='width:180px;font-size:16px; font-weight:bold; color:#f0f0f0;'>"+
-							  "fUnit test battery</td>";
+							  "jfUnit test battery</td>";
 				htmlContent+= "<td>";
 				htmlContent+= "<div style='background-color:red; height:8px; width:100%;border:solid 1px #444;"+
 							  " -webkit-box-shadow:6px 0px 20px #99f;"+
 							  " -moz-box-shadow:6px 0px 20px #99f;"+
 							  "'>";
 				htmlContent+= "<div style='background-color:#0d0; height:8px; width:0%;"+
-							  "border-right:solid 1px #000;' id='fUnitDivHTMLElement_percentBar'></div>";
+							  "border-right:solid 1px #000;' id='jfUnitDivHTMLElement_percentBar'></div>";
 				htmlContent+= "</div>";
-				htmlContent+= "</td><td style='width:46px;text-align:right;color:white;' id='fUnitDivHTMLElement_percent'>0%";
+				htmlContent+= "</td><td style='width:46px;text-align:right;color:white;' id='jfUnitDivHTMLElement_percent'>0%";
 				htmlContent+= "</td></tr>";
 				htmlContent+= "</table>";
-			fUnit.htmlElement.innerHTML= htmlContent;
-			fUnit.htmlElement.innerHTML+= "<div id='fUnitDivHTMLElement'> </div>";
-			fUnit.placeHolder= fUnit.placeHolder||document.body;
-			fUnit.placeHolder.appendChild(fUnit.htmlElement);
-			fUnit.container= document.getElementById('fUnitDivHTMLElement');
+			jfUnit.htmlElement.innerHTML= htmlContent;
+			jfUnit.htmlElement.innerHTML+= "<div id='jfUnitDivHTMLElement'> </div>";
+			jfUnit.placeHolder= jfUnit.placeHolder||document.body;
+			jfUnit.placeHolder.appendChild(jfUnit.htmlElement);
+			jfUnit.container= document.getElementById('jfUnitDivHTMLElement');
 		}
-		
-		fUnit.runTests();
+
+		jfUnit.runTests();
 		return true;
 	},
 	runTests: function(){
 		var argsToPass= null;
-		for(testName in fUnit.tests)
+		for(testName in jfUnit.tests)
 		{
-			test= fUnit.tests[testName];
-			fUnit.currentTest= test;
+			test= jfUnit.tests[testName];
+			jfUnit.currentTest= test;
 
 			var delay= test.delay;
 			if(delay)
 			{
 				test.delay= false;
-				setTimeout(fUnit.runTests, delay);
+				setTimeout(jfUnit.runTests, delay);
 				return;
 			}
 
@@ -337,17 +345,17 @@ fUnit= {
 						var ret= eval(commandToTest);
 					}catch(e)
 					{
-						fUnit.fail(test, fUnit.currentTest.notMatched);
+						jfUnit.fail(test, jfUnit.currentTest.notMatched);
 					}
 				  }
-			if((message= fUnit.equals(ret, test.expected)) == true)
+			if((message= jfUnit.equals(ret, test.expected)) == true)
 			{
-				fUnit.pass(test);
+				jfUnit.pass(test);
 			}else{
-					fUnit.fail(test, fUnit.currentTest.notMatched);
+					jfUnit.fail(test, jfUnit.currentTest.notMatched);
 				 }
 
-			if(fUnit.container && fUnit.format=='html')
+			if(jfUnit.container && jfUnit.format=='html')
 			{
 				var dv= document.createElement('div');
 				dv.style.backgroundColor= '#efefef';
@@ -375,12 +383,12 @@ fUnit= {
 					var r= ret;
 					if(typeof expct == 'string')
 					{
-						if(fUnit.currentTest.assertType == 'type')
+						if(jfUnit.currentTest.assertType == 'type')
 						{
 							expct= 'of type '+expct+'</i>';
 							r= typeof ret;
 						}
-						else if(fUnit.currentTest.assertType == 'notType'){
+						else if(jfUnit.currentTest.assertType == 'notType'){
 							expct= '"'+expct+'"';
 						}else
 							expct= '"'+expct+'"';
@@ -391,7 +399,7 @@ fUnit= {
 								expct= expct.toString();
 							if(expct === '[[object Object]]')
 								expct= '{Object Structure}';
-							switch(fUnit.currentTest.assertType)
+							switch(jfUnit.currentTest.assertType)
 							{
 								case 'not':
 									expct= "different than "+expct;
@@ -439,33 +447,40 @@ fUnit= {
 								  ' <b> received: </b>'+ r +
 								  (!test.description || test.description== ''? "": ": <i>"+test.description+"</i>");
 
-					if(fUnit.currentTest.notMatched)
+					if(jfUnit.currentTest.notMatched)
 					{
-						dv.innerHTML+='<br/><b style="float:left;">diff:</b> <div style="padding:2px;margin-left:30px; white-space: pre; font-style: italic; border-left:dashed 1px #777;"> '+fUnit.currentTest.notMatched+"</div>";
+						dv.innerHTML+='<br/><b style="float:left;">diff:</b> <div style="padding:2px;margin-left:30px; white-space: pre; font-style: italic; border-left:dashed 1px #777;"> '+jfUnit.currentTest.notMatched+"</div>";
 					}
 				}
-				fUnit.container.appendChild(dv);
+				jfUnit.container.appendChild(dv);
 			}
 
 			if(test.callBack)
 				test.callBack(test.status);
-			fUnit.log(test.status);
-			fUnit.tests[testName]= false;
-			delete fUnit.tests[testName];
+			jfUnit.log(test.status);
+			jfUnit.tests[testName]= false;
+			delete jfUnit.tests[testName];
 		}
 
-		fUnit.tearDown();
+		jfUnit.tearDown();
 	},
 	test: function(){
-		fUnit.run();
+		jfUnit.run();
 	},
 	perform: function(){
-		fUnit.run();
+		jfUnit.run();
 	},
+	/**
+	 * You can pass e group of parameters to this method, or
+	 * send an object with at least 'call' and 'expected' properties
+	 * @name assert
+	 * @return void
+	 * @params Mixed...
+	 */
 	assert: function(){
 		var args = Array.prototype.slice.call(arguments);
 		if(args.length==0)
-			args= fUnit.assertArgs;
+			args= jfUnit.assertArgs;
 		var arg;
 		var test= {
 					callBack: function(){},
@@ -480,10 +495,10 @@ fUnit= {
 					assertType:args['assertType']||'equals',
 					structureOnly:false
 				  };
-		
+
 		if(typeof args[0] == 'object')
 		{
-			var o= args[0];			
+			var o= args[0];
 			for(arg in o)
 			{
 				switch(arg)
@@ -535,15 +550,15 @@ fUnit= {
 						break;
 				}
 			}
-			test.assertType= test.assertType||fUnit.assertArgs['assertType']||'equals';
+			test.assertType= test.assertType||jfUnit.assertArgs['assertType']||'equals';
 		}else{
 				if(arguments.length < 2)
 				{
 					this.log("Invalid parameters");
 				}
-				
-				test.assertType= fUnit.assertArgs['assertType']||'equals';
-				
+
+				test.assertType= jfUnit.assertArgs['assertType']||'equals';
+
 				var callBack= args.pop();
 				if(typeof callBack != 'function')
 				{
@@ -555,7 +570,7 @@ fUnit= {
 				test.callBack= callBack;
 				test.func= args.shift();
 				test.args= Array();
-				
+
 				for(arg in args)
 				{
 					test.args[arg]= args[arg];
@@ -567,85 +582,136 @@ fUnit= {
 		}
 		if(test.funcName == '')
 			test.funcName= "test_"+(this.tests.length+1);
-		if(fUnit.tests[test.funcName])
+		if(jfUnit.tests[test.funcName])
 		{
 			var tmpName= test.funcName;
 			var c= 0;
-			while(fUnit.tests[tmpName])
+			while(jfUnit.tests[tmpName])
 			{
 				c++;
 				tmpName= test.funcName+'_'+c;
 			}
 			test.funcName= tmpName;
 		}
-		fUnit.tests[test.funcName]= test;
-		fUnit.assertArgs['assertType']= 'equals';
+		jfUnit.tests[test.funcName]= test;
+		jfUnit.assertArgs['assertType']= 'equals';
 	},
+	/**
+	 * Assert the returned value must be one of the
+	 * values in the expected array
+	 * @name assertIn
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertIn: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'into';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'into';
+		jfUnit.assert();
 	},
+	/**
+	 * The inverse of assertIn
+	 * @name assertNotIn
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertNotIn: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'notIn';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'notIn';
+		jfUnit.assert();
 	},
+	/**
+	 * The inverse of assert
+	 * @name assertNot
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertNot: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'not';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'not';
+		jfUnit.assert();
 	},
+	/**
+	 * Assert the value return must be between two values,
+	 * passed as array by your 'expected' parameter
+	 * @name assertBetween
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertBetween: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'between';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'between';
+		jfUnit.assert();
 	},
+	/**
+	 * The inverse of assertBetween
+	 * @name assertNotBetween
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertNotBetween: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'notBetween';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'notBetween';
+		jfUnit.assert();
 	},
+	// not yet implemented
 	assertState: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'state';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'state';
+		jfUnit.assert();
 	},
+	/**
+	 * Asserts a value is greater than the expected
+	 * @name assertGT
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertGT: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'GT';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'GT';
+		jfUnit.assert();
 	},
+	/**
+	 * Asserts a value is less than the expected
+	 * @name assertLT
+	 * @return void
+	 * @param Mixed...
+	 */
 	assertLT: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'LT';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'LT';
+		jfUnit.assert();
 	},
+	/**
+	 * asserts that the type of the returned value, must
+	 * be the specified as expected
+	 * @name assertType
+	 * @param Mixed...
+	 * @return void
+	 */
 	assertType: function(){
 		var args= arguments;
 		args= Array.prototype.slice.call(args);
-		fUnit.assertArgs= args;
-		fUnit.assertArgs['assertType']= 'type';
-		fUnit.assert();
+		jfUnit.assertArgs= args;
+		jfUnit.assertArgs['assertType']= 'type';
+		jfUnit.assert();
 	},
 	init: function(){
 	}
 };
-fUnit.init();
-
+jfUnit.init();
